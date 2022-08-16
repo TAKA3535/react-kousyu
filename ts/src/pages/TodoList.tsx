@@ -1,16 +1,19 @@
 import './TodoList.css';
+import React from 'react';
 import { useState ,useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Input } from "../components/input";
 import { Button } from "../components/button";
 import { Todo } from "../model/Todo";
 import axios from "axios";
 
-export const TodoList = () => {
+export const TodoList:React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [todoList, setTodoList] = useState<Todo[]>([]
-  );
+  const [todoList, setTodoList] = useState<Todo[]>([]);
 
+ const navigete = useNavigate();
+ 
 useEffect(()=>{
   (async()=>{
     const response = await axios.get("/todos");
@@ -40,7 +43,7 @@ useEffect(()=>{
   const deleteTodoList = async( todo:Todo ) => {
     const newTodoList = [...todoList];
     await axios.delete(`/todos/${todo.id}`);
-    const index = newTodoList.findIndex((newTodo) => newTodo.title === todo.title);
+    const index = newTodoList.findIndex((newTodo) => newTodo.id === todo.id);
     newTodoList.splice(index, 1);
     setTodoList(newTodoList);
   }
@@ -59,8 +62,14 @@ useEffect(()=>{
         <div className="todo_list">
           {todoList.map(( todo:Todo ) => {
             return (
-              <div key={todo.id} className="todo_card">
-                <h2 className="todo_title">{todo.id}<img src="img/dust_box.png" alt="削除ボタン" className="delete_button" onClick={()=>deleteTodoList(todo)}/></h2>
+              <div key={todo.id} className="todo_card" onClick={()=>navigete(`/edit/${todo.id}`)}>
+                <h2 className="todo_title">{todo.id}
+                <img 
+                src="img/dust_box.png" alt="削除ボタン" className="delete_button" 
+                onClick={(e)=>{
+                  e.stopPropagation();
+                  deleteTodoList(todo)}}/>
+                  </h2>
                 <p className="todo_content">{todo.description}</p>
               </div>
             )
