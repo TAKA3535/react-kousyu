@@ -1,22 +1,21 @@
 import "./TodoEdit.css";
 import React from "react";
-import { useState ,useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState ,useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Todo } from "../model/Todo";
+import { TodoIdContext} from "../store/TodoIdContext";
 import axios from "axios";
 
 export const TodoEdit:React.FC = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const {todoId} = useContext(TodoIdContext);
 
-    const urlParams = useParams<{id:string}>();
-    const id = parseInt(urlParams.id as string);
-
-const navigate = useNavigate();
+    const navigate = useNavigate();
 
     useEffect(()=>{
         (async()=>{
-          const response = await axios.get(`/todos/${id}`);
+          const response = await axios.get(`/todos/${todoId}`);
           setTitle(response.data.title);
           setDescription(response.data.description);
         })()
@@ -35,7 +34,7 @@ const navigate = useNavigate();
             title:title,
             description:description
         }
-        await axios.put(`/todos/${id}`, request);
+        await axios.put(`/todos/${todoId}`, request);
         navigate("/");
       }
 
